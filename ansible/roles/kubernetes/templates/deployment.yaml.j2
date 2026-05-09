@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stockportfolio-app
+  labels:
+    app: stockportfolio
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stockportfolio
+  template:
+    metadata:
+      labels:
+        app: stockportfolio
+    spec:
+      containers:
+        - name: stockportfolio-app
+          image: "chaitanya020403/stock-portfolio-manager:{{ image_tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_USERNAME
+              value: "{{ db_username }}"
+            - name: DB_PASSWORD
+              value: "{{ db_password }}"
+            - name: JWT_SECRET
+              value: "{{ jwt_secret }}"
+            - name: FINNHUB_API_KEY
+              value: "{{ finnhub_api_key }}"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://host.minikube.internal:3306/stockportfolio"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"

@@ -1,0 +1,71 @@
+---
+# Role: elk_stack
+# Ensures Elasticsearch, Logstash, and Kibana containers are running
+
+- name: Create ELK network if not exists
+  community.docker.docker_network:
+    name: elk_network
+    state: present
+
+- name: Start Elasticsearch
+  community.docker.docker_container:
+    name: stockportfolio-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    state: started
+    restart_policy: unless-stopped
+    env:
+      discovery.type: "single-node"
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - name: elk_network
+
+- name: Wait for Elasticsearch to be ready
+  uri:
+    url: "http://localhost:9200/_cluster/health"
+    status_code: 200
+  register: es_health
+  until: es_health.status == 200
+  retries: 15
+  delay: 10
+
+- name: Start Logstash
+  community.docker.docker_container:
+    name: stockportfolio-logstash
+    image: docker.elastic.co/logstash/logstash:8.13.0
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "5044:5044"
+      - "5000:5000/udp"
+    volumes:
+      - "{{ playbook_dir }}/../../logstash/pipeline:/usr/share/logstash/pipeline:ro"
+      - app_logs:/app/logs:ro
+    networks:
+      - name: elk_network
+
+- name: Start Kibana
+  community.docker.docker_container:
+    name: stockportfolio-kibana
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    state: started
+    restart_policy: unless-stopped
+    env:
+      ELASTICSEARCH_HOSTS: "http://stockportfolio-elasticsearch:9200"
+    ports:
+      - "5601:5601"
+    networks:
+      - name: elk_network
+
+- name: Wait for Kibana to be ready
+  uri:
+    url: "http://localhost:5601/api/status"
+    status_code: 200
+  register: kibana_health
+  until: kibana_health.status == 200
+  retries: 15
+  delay: 10

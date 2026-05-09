@@ -1,0 +1,38 @@
+---
+# Role: mysql
+# Ensures MySQL is running and the stockportfolio database/user exist
+
+- name: Ensure Docker is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Pull MySQL image
+  community.docker.docker_image:
+    name: mysql
+    tag: "8.0"
+    source: pull
+
+- name: Start MySQL container
+  community.docker.docker_container:
+    name: stockportfolio-mysql
+    image: mysql:8.0
+    state: started
+    restart_policy: unless-stopped
+    env:
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_DATABASE: "stockportfolio"
+      MYSQL_USER: "{{ db_username }}"
+      MYSQL_PASSWORD: "{{ db_password }}"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+- name: Wait for MySQL to be healthy
+  wait_for:
+    port: 3306
+    host: localhost
+    delay: 10
+    timeout: 60

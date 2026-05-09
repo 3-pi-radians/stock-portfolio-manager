@@ -1,0 +1,41 @@
+---
+# Role: kubernetes
+# Deploys the application to Kubernetes and sets up HPA
+
+- name: Create kubernetes manifests directory
+  file:
+    path: "{{ playbook_dir }}/../../k8s"
+    state: directory
+
+- name: Copy Kubernetes Deployment manifest
+  template:
+    src: deployment.yaml.j2
+    dest: "{{ playbook_dir }}/../../k8s/deployment.yaml"
+
+- name: Copy Kubernetes Service manifest
+  copy:
+    src: service.yaml
+    dest: "{{ playbook_dir }}/../../k8s/service.yaml"
+
+- name: Copy Kubernetes HPA manifest
+  copy:
+    src: hpa.yaml
+    dest: "{{ playbook_dir }}/../../k8s/hpa.yaml"
+
+- name: Apply Kubernetes Deployment
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ playbook_dir }}/../../k8s/deployment.yaml"
+  ignore_errors: yes
+
+- name: Apply Kubernetes Service
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ playbook_dir }}/../../k8s/service.yaml"
+  ignore_errors: yes
+
+- name: Apply Kubernetes HPA
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ playbook_dir }}/../../k8s/hpa.yaml"
+  ignore_errors: yes
