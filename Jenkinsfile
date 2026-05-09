@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'chaitanya020403'
+        DOCKER_IMAGE = 'chaitanya020403/stock-portfolio-manager'
         DOCKER_TAG = "${BUILD_NUMBER}"
         DB_USERNAME = credentials('db-username')
         DB_PASSWORD = credentials('db-password')
