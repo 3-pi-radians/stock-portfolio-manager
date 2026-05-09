@@ -1,5 +1,6 @@
-# Environment variables - NEVER upload this
+# Environment variables - NEVER commit the real .env file
 .env
+# .env.example is safe to commit (contains no real secrets)
 
 # Maven build output
 target/

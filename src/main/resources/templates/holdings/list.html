@@ -41,21 +41,22 @@
               style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:flex-end">
             <div>
                 <label>Symbol</label>
-                <input type="text" th:field="*{stockSymbol}" placeholder="AAPL"/>
+                <input id="buySymbol" type="text" th:field="*{stockSymbol}" placeholder="AAPL" oninput="checkBuyForm()"/>
             </div>
             <div>
                 <label>Name</label>
-                <input type="text" th:field="*{stockName}" placeholder="Apple Inc."/>
+                <input id="buyName" type="text" th:field="*{stockName}" placeholder="Apple Inc." oninput="checkBuyForm()"/>
             </div>
             <div>
                 <label>Quantity</label>
-                <input type="number" th:field="*{quantity}" placeholder="10"/>
+                <input id="buyQty" type="number" th:field="*{quantity}" placeholder="10" min="1" oninput="checkBuyForm()"/>
             </div>
             <div>
                 <label>Buy Price ($)</label>
-                <input type="number" step="0.01" th:field="*{buyPrice}" placeholder="150.00"/>
+                <input id="buyPrice" type="number" step="0.01" th:field="*{buyPrice}" placeholder="150.00" min="0.01" oninput="checkBuyForm()"/>
             </div>
-            <button class="btn btn-success" style="margin-bottom:14px">Buy</button>
+            <button id="buyBtn" class="btn btn-success" style="margin-bottom:14px" disabled
+                    title="Fill in all fields to enable">Buy</button>
         </form>
     </div>
 
@@ -68,17 +69,17 @@
                 <th>Current Value</th><th>P&amp;L</th><th>Action</th>
             </tr>
             <tr th:each="item : ${enrichedHoldings}">
-                <td><strong th:text="${item.holding.stockSymbol}"></strong></td>
-                <td th:text="${item.holding.stockName}"></td>
-                <td th:text="${item.holding.quantity}"></td>
-                <td th:text="'$' + ${item.holding.buyPrice}"></td>
-                <td th:text="${item.currentPrice != null} ? '$' + ${item.currentPrice} : 'N/A'"></td>
-                <td th:text="${item.currentValue != null} ? '$' + ${item.currentValue} : 'N/A'"></td>
-                <td th:classappend="${item.pnl != null and item.pnl >= 0} ? 'positive' : 'negative'"
-                    th:text="${item.pnl != null} ? '$' + ${item.pnl} : 'N/A'"></td>
+                <td><strong th:text="${item['holding'].stockSymbol}"></strong></td>
+                <td th:text="${item['holding'].stockName}"></td>
+                <td th:text="${item['holding'].quantity}"></td>
+                <td th:text="'$' + ${item['holding'].buyPrice}"></td>
+                <td th:text="${item['currentPrice'] != null} ? '$' + ${item['currentPrice']} : 'N/A'"></td>
+                <td th:text="${item['currentValue'] != null} ? '$' + ${item['currentValue']} : 'N/A'"></td>
+                <td th:classappend="${item['pnl'] != null and item['pnl'] >= 0} ? 'positive' : 'negative'"
+                    th:text="${item['pnl'] != null} ? '$' + ${item['pnl']} : 'N/A'"></td>
                 <td>
                     <form th:action="@{/portfolio/{pid}/holdings/remove/{hid}
-                          (pid=${portfolio.id},hid=${item.holding.id})}" method="post">
+                          (pid=${portfolio.id},hid=${item['holding'].id})}" method="post">
                         <button class="btn btn-danger btn-sm"
                                 onclick="return confirm('Sell this holding?')">Sell</button>
                     </form>
@@ -107,5 +108,22 @@
         <p th:if="${transactions.empty}" style="color:#888">No transactions yet.</p>
     </div>
 </div>
+<script>
+    function checkBuyForm() {
+        var symbol = document.getElementById('buySymbol').value.trim();
+        var name   = document.getElementById('buyName').value.trim();
+        var qty    = document.getElementById('buyQty').value;
+        var price  = document.getElementById('buyPrice').value;
+        var btn    = document.getElementById('buyBtn');
+        var allFilled = symbol !== '' && name !== '' &&
+                        qty !== '' && Number(qty) > 0 &&
+                        price !== '' && Number(price) > 0;
+        btn.disabled = !allFilled;
+        btn.style.opacity = allFilled ? '1' : '0.5';
+        btn.style.cursor  = allFilled ? 'pointer' : 'not-allowed';
+    }
+    // Run on page load to ensure disabled state
+    document.addEventListener('DOMContentLoaded', checkBuyForm);
+</script>
 </body>
 </html>

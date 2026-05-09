@@ -3,7 +3,6 @@ package com.stockportfolio.app.controller;
 import com.stockportfolio.app.dto.LoginRequest;
 import com.stockportfolio.app.dto.RegisterRequest;
 import com.stockportfolio.app.service.AuthService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +47,9 @@ public class AuthController {
                         Model model) {
         try {
             String token = authService.login(request);
-            Cookie cookie = new Cookie("jwt", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(86400);
-            response.addCookie(cookie);
+            // Use raw header to include SameSite=Lax (Jakarta Cookie API lacks setSameSite)
+            response.addHeader("Set-Cookie",
+                    "jwt=" + token + "; Path=/; HttpOnly; Max-Age=86400; SameSite=Lax");
             return "redirect:/portfolio";
         } catch (Exception e) {
             model.addAttribute("error", "Invalid username or password");
@@ -62,10 +59,8 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("jwt", "");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        response.addHeader("Set-Cookie",
+                "jwt=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax");
         return "redirect:/auth/login";
     }
 }
