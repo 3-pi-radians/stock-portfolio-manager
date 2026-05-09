@@ -5,7 +5,6 @@
 
 - name: Deploy Stock Portfolio Manager
   hosts: app_servers
-  become: yes
   vars_files:
     - ../vars/secrets.yml     # Ansible Vault encrypted secrets
 

@@ -2,13 +2,6 @@
 # Role: app_server
 # Pulls the latest Docker image and restarts the Spring Boot app container
 
-- name: Pull latest app Docker image
-  community.docker.docker_image:
-    name: "chaitanya020403/stock-portfolio-manager"
-    tag: "{{ image_tag }}"
-    source: pull
-    force_source: yes
-
 - name: Stop existing app container (if running)
   community.docker.docker_container:
     name: stockportfolio-app
@@ -26,7 +19,7 @@
       DB_PASSWORD: "{{ db_password }}"
       JWT_SECRET: "{{ jwt_secret }}"
       FINNHUB_API_KEY: "{{ finnhub_api_key }}"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://stockportfolio-mysql:3306/stockportfolio"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/stockportfolio"
     ports:
       - "8081:8081"
     links:

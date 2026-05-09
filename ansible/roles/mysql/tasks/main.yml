@@ -2,12 +2,6 @@
 # Role: mysql
 # Ensures MySQL is running and the stockportfolio database/user exist
 
-- name: Ensure Docker is running
-  service:
-    name: docker
-    state: started
-    enabled: yes
-
 - name: Pull MySQL image
   community.docker.docker_image:
     name: mysql
