@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'chaitanya020403/stock-portfolio-manager'
+        DOCKER_IMAGE = '3-pi-radians/stock-portfolio-manager'
         DOCKER_TAG = "${BUILD_NUMBER}"
-        DB_USERNAME = credentials('db-username')
-        DB_PASSWORD = credentials('db-password')
-        FINNHUB_API_KEY = credentials('finnhub-api-key')
-        JWT_SECRET = credentials('jwt-secret')
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        FINNHUB_API_KEY = credentials('FINNHUB_API_KEY')
+        JWT_SECRET = credentials('JWT_SECRET')
     }
 
     stages {
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 echo '========== Stage 1: Cloning repository =========='
                 git branch: 'main',
-                    url: 'https://github.com/Chaitanya020403/stock-portfolio-manager.git'
+                    url: 'https://github.com/3-pi-radians/stock-portfolio-manager.git'
                 echo 'Repository cloned successfully'
             }
         }
