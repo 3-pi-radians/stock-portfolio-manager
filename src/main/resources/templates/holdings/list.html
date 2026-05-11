@@ -1,129 +1,146 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Holdings</title>
     <meta http-equiv="refresh" content="60">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
-<nav>
-    <a class="brand" th:href="@{/portfolio}">📈 StockFolio</a>
-    <div>
-        <a th:href="@{/portfolio}">Portfolios</a>
-        <a th:href="@{/market}">Market</a>
-        <a th:href="@{/auth/logout}">Logout</a>
-    </div>
-</nav>
-<div class="container">
-    <h1 th:text="${portfolio.name}"></h1>
+    <nav>
+        <a class="brand" th:href="@{/portfolio}">📈 StockFolio</a>
+        <div>
+            <a th:href="@{/portfolio}">Portfolios</a>
+            <a th:href="@{/market}">Market</a>
+            <a th:href="@{/auth/logout}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 th:text="${portfolio.name}"></h1>
 
-    <div class="stat-grid">
-        <div class="stat-card">
-            <div class="stat-value" th:text="'$' + ${totalInvested}"></div>
-            <div class="stat-label">Total Invested</div>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value" th:text="'$' + ${totalInvested}"></div>
+                <div class="stat-label">Total Invested</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:text="'$' + ${totalCurrent}"></div>
+                <div class="stat-label">Current Value</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" th:classappend="${totalPnl >= 0} ? 'positive' : 'negative'"
+                    th:text="'$' + ${totalPnl}"></div>
+                <div class="stat-label">Total P&amp;L</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" th:text="'$' + ${totalCurrent}"></div>
-            <div class="stat-label">Current Value</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value"
-                 th:classappend="${totalPnl >= 0} ? 'positive' : 'negative'"
-                 th:text="'$' + ${totalPnl}"></div>
-            <div class="stat-label">Total P&amp;L</div>
-        </div>
-    </div>
 
-    <div class="card">
-        <h2>Add Stock</h2>
-        <form th:action="@{/portfolio/{id}/holdings/add(id=${portfolio.id})}"
-              th:object="${holdingRequest}" method="post"
-              style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:flex-end">
-            <div>
-                <label>Symbol</label>
-                <input id="buySymbol" type="text" th:field="*{stockSymbol}" placeholder="AAPL" oninput="checkBuyForm()"/>
-            </div>
-            <div>
-                <label>Name</label>
-                <input id="buyName" type="text" th:field="*{stockName}" placeholder="Apple Inc." oninput="checkBuyForm()"/>
-            </div>
-            <div>
-                <label>Quantity</label>
-                <input id="buyQty" type="number" th:field="*{quantity}" placeholder="10" min="1" oninput="checkBuyForm()"/>
-            </div>
-            <div>
-                <label>Buy Price ($)</label>
-                <input id="buyPrice" type="number" step="0.01" th:field="*{buyPrice}" placeholder="150.00" min="0.01" oninput="checkBuyForm()"/>
-            </div>
-            <button id="buyBtn" class="btn btn-success" style="margin-bottom:14px" disabled
+        <div class="card">
+            <h2>Add Stock</h2>
+            <form th:action="@{/portfolio/{id}/holdings/add(id=${portfolio.id})}" th:object="${holdingRequest}"
+                method="post"
+                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:flex-end">
+                <div>
+                    <label>Symbol</label>
+                    <input id="buySymbol" type="text" th:field="*{stockSymbol}" placeholder="AAPL"
+                        oninput="checkBuyForm()" />
+                </div>
+                <div>
+                    <label>Name</label>
+                    <input id="buyName" type="text" th:field="*{stockName}" placeholder="Apple Inc."
+                        oninput="checkBuyForm()" />
+                </div>
+                <div>
+                    <label>Quantity</label>
+                    <input id="buyQty" type="number" th:field="*{quantity}" placeholder="10" min="1"
+                        oninput="checkBuyForm()" />
+                </div>
+                <div>
+                    <label>Buy Price ($)</label>
+                    <input id="buyPrice" type="number" step="0.01" th:field="*{buyPrice}" placeholder="150.00"
+                        min="0.01" oninput="checkBuyForm()" />
+                </div>
+                <button id="buyBtn" class="btn btn-success" style="margin-bottom:14px" disabled
                     title="Fill in all fields to enable">Buy</button>
-        </form>
-    </div>
+            </form>
+        </div>
 
-    <div class="card">
-        <h2>Current Holdings (Demo)</h2>
-        <table th:if="${!enrichedHoldings.empty}">
-            <tr>
-                <th>Symbol</th><th>Name</th><th>Qty</th>
-                <th>Buy Price</th><th>Current Price</th>
-                <th>Current Value</th><th>P&amp;L</th><th>Action</th>
-            </tr>
-            <tr th:each="item : ${enrichedHoldings}">
-                <td><strong th:text="${item['holding'].stockSymbol}"></strong></td>
-                <td th:text="${item['holding'].stockName}"></td>
-                <td th:text="${item['holding'].quantity}"></td>
-                <td th:text="'$' + ${item['holding'].buyPrice}"></td>
-                <td th:text="${item['currentPrice'] != null} ? '$' + ${item['currentPrice']} : 'N/A'"></td>
-                <td th:text="${item['currentValue'] != null} ? '$' + ${item['currentValue']} : 'N/A'"></td>
-                <td th:classappend="${item['pnl'] != null and item['pnl'] >= 0} ? 'positive' : 'negative'"
-                    th:text="${item['pnl'] != null} ? '$' + ${item['pnl']} : 'N/A'"></td>
-                <td>
-                    <form th:action="@{/portfolio/{pid}/holdings/remove/{hid}
+        <div class="card">
+            <h2>Current Holdings (Demo)</h2>
+            <table th:if="${!enrichedHoldings.empty}">
+                <tr>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                    <th>Buy Price</th>
+                    <th>Current Price</th>
+                    <th>Current Value</th>
+                    <th>P&amp;L</th>
+                    <th>Action</th>
+                </tr>
+                <tr th:each="item : ${enrichedHoldings}">
+                    <td><strong th:text="${item['holding'].stockSymbol}"></strong></td>
+                    <td th:text="${item['holding'].stockName}"></td>
+                    <td th:text="${item['holding'].quantity}"></td>
+                    <td th:text="'$' + ${item['holding'].buyPrice}"></td>
+                    <td th:text="${item['currentPrice'] != null} ? '$' + ${item['currentPrice']} : 'N/A'"></td>
+                    <td th:text="${item['currentValue'] != null} ? '$' + ${item['currentValue']} : 'N/A'"></td>
+                    <td th:classappend="${item['pnl'] != null and item['pnl'] >= 0} ? 'positive' : 'negative'"
+                        th:text="${item['pnl'] != null} ? '$' + ${item['pnl']} : 'N/A'"></td>
+                    <td>
+                        <form th:action="@{/portfolio/{pid}/holdings/remove/{hid}
                           (pid=${portfolio.id},hid=${item['holding'].id})}" method="post">
-                        <button class="btn btn-danger btn-sm"
+                            <button class="btn btn-danger btn-sm"
                                 onclick="return confirm('Sell this holding?')">Sell</button>
-                    </form>
-                </td>
-            </tr>
-        </table>
-        <p th:if="${enrichedHoldings.empty}" style="color:#888">No holdings yet.</p>
-    </div>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+            <p th:if="${enrichedHoldings.empty}" style="color:#888">No holdings yet.</p>
+        </div>
 
-    <div class="card">
-        <h2>Transaction History</h2>
-        <table th:if="${!transactions.empty}">
-            <tr><th>Symbol</th><th>Action</th><th>Qty</th><th>Price</th><th>Date</th></tr>
-            <tr th:each="tx : ${transactions}">
-                <td th:text="${tx.stockSymbol}"></td>
-                <td>
-                    <span class="badge"
-                          th:classappend="${tx.action.name() == 'BUY'} ? 'badge-success' : 'badge-danger'"
-                          th:text="${tx.action}"></span>
-                </td>
-                <td th:text="${tx.quantity}"></td>
-                <td th:text="'$' + ${tx.price}"></td>
-                <td th:text="${tx.executedAt}"></td>
-            </tr>
-        </table>
-        <p th:if="${transactions.empty}" style="color:#888">No transactions yet.</p>
+        <div class="card">
+            <h2>Transaction History</h2>
+            <table th:if="${!transactions.empty}">
+                <tr>
+                    <th>Symbol</th>
+                    <th>Action</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                </tr>
+                <tr th:each="tx : ${transactions}">
+                    <td th:text="${tx.stockSymbol}"></td>
+                    <td>
+                        <span class="badge"
+                            th:classappend="${tx.action.name() == 'BUY'} ? 'badge-success' : 'badge-danger'"
+                            th:text="${tx.action}"></span>
+                    </td>
+                    <td th:text="${tx.quantity}"></td>
+                    <td th:text="'$' + ${tx.price}"></td>
+                    <td th:text="${tx.executedAt}"></td>
+                </tr>
+            </table>
+            <p th:if="${transactions.empty}" style="color:#888">No transactions yet.</p>
+        </div>
     </div>
-</div>
-<script>
-    function checkBuyForm() {
-        var symbol = document.getElementById('buySymbol').value.trim();
-        var name   = document.getElementById('buyName').value.trim();
-        var qty    = document.getElementById('buyQty').value;
-        var price  = document.getElementById('buyPrice').value;
-        var btn    = document.getElementById('buyBtn');
-        var allFilled = symbol !== '' && name !== '' &&
-                        qty !== '' && Number(qty) > 0 &&
-                        price !== '' && Number(price) > 0;
-        btn.disabled = !allFilled;
-        btn.style.opacity = allFilled ? '1' : '0.5';
-        btn.style.cursor  = allFilled ? 'pointer' : 'not-allowed';
-    }
-    // Run on page load to ensure disabled state
-    document.addEventListener('DOMContentLoaded', checkBuyForm);
-</script>
+    <script>
+        function checkBuyForm() {
+            var symbol = document.getElementById('buySymbol').value.trim();
+            var name = document.getElementById('buyName').value.trim();
+            var qty = document.getElementById('buyQty').value;
+            var price = document.getElementById('buyPrice').value;
+            var btn = document.getElementById('buyBtn');
+            var allFilled = symbol !== '' && name !== '' &&
+                qty !== '' && Number(qty) > 0 &&
+                price !== '' && Number(price) > 0;
+            btn.disabled = !allFilled;
+            btn.style.opacity = allFilled ? '1' : '0.5';
+            btn.style.cursor = allFilled ? 'pointer' : 'not-allowed';
+        }
+        // this Run on page load to ensure disabled state 
+        document.addEventListener('DOMContentLoaded', checkBuyForm);
+    </script>
 </body>
+
 </html>
