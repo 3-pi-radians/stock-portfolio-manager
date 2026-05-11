@@ -105,9 +105,7 @@ pipeline {
             echo '========================================='
         }
         always {
-            node {
-                sh 'docker logout'
-            }
+            sh 'docker logout'
         }
     }
 }
