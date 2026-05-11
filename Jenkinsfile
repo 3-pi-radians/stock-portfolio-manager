@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = '3-pi-radians/stock-portfolio-manager'
+        DOCKER_IMAGE = '3piradians/stock-portfolio-manager'
         DOCKER_TAG = "${BUILD_NUMBER}"
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
@@ -105,7 +105,9 @@ pipeline {
             echo '========================================='
         }
         always {
-            sh 'docker logout'
+            node {
+                sh 'docker logout'
+            }
         }
     }
 }
