@@ -11,7 +11,7 @@
 - name: Start Spring Boot app container
   community.docker.docker_container:
     name: stockportfolio-app
-    image: "chaitanya020403/stock-portfolio-manager:{{ image_tag }}"
+    image: "3piradians/stock-portfolio-manager:{{ image_tag }}"
     state: started
     restart_policy: on-failure
     env:
