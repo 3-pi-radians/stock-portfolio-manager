@@ -2,10 +2,8 @@
 # Role: app_server
 # Pulls the latest Docker image and restarts the Spring Boot app container
 
-- name: Stop existing app container (if running)
-  community.docker.docker_container:
-    name: stockportfolio-app
-    state: absent
+- name: Force remove existing app container (if running)
+  shell: docker rm -f stock-portfolio-manager || true
   ignore_errors: yes
 
 - name: Start Spring Boot app container
