@@ -8,6 +8,7 @@ pipeline {
         DB_PASSWORD = credentials('DB_PASSWORD')
         FINNHUB_API_KEY = credentials('FINNHUB_API_KEY')
         JWT_SECRET = credentials('JWT_SECRET')
+        KUBECONFIG = "/Users/pankajdeopa/.kube/config"
     }
 
     stages {
