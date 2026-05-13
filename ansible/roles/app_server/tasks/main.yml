@@ -2,6 +2,10 @@
 # Role: app_server
 # Pulls the latest Docker image and restarts the Spring Boot app container
 
+- name: Create Docker network if not exists
+  shell: docker network create stockportfolio-network || true
+  ignore_errors: yes
+
 - name: Force remove existing app container (if running)
   shell: docker rm -f stockportfolio-app || true
   ignore_errors: yes
