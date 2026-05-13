@@ -28,7 +28,7 @@
       -e DB_USERNAME="{{ db_username }}" \
       -e DB_PASSWORD="{{ db_password }}" \
       -e JWT_SECRET="{{ jwt_secret }}" \
-      -p 8081:8081 \
+      -p 8200:8081 \
       -v auth_logs:/app/logs \
       3piradians/auth-service:latest
 
@@ -45,7 +45,7 @@
       -e DB_PASSWORD="{{ db_password }}" \
       -e JWT_SECRET="{{ jwt_secret }}" \
       -e FINNHUB_API_KEY="{{ finnhub_api_key }}" \
-      -p 8082:8082 \
+      -p 8201:8082 \
       -v app_logs:/app/logs \
       3piradians/app-service:latest
 
@@ -58,13 +58,13 @@
       -e JWT_SECRET="{{ jwt_secret }}" \
       -e AUTH_SERVICE_URL="http://auth-service:8081" \
       -e APP_SERVICE_URL="http://app-service:8082" \
-      -p 8080:8080 \
+      -p 8202:8080 \
       -v gateway_logs:/app/logs \
       3piradians/api-gateway:{{ image_tag }}
 
 - name: Wait for api-gateway to be healthy
   uri:
-    url: "http://localhost:8080/auth/login"
+    url: "http://localhost:8202/auth/login"
     status_code: 200
   register: result
   until: result.status == 200
