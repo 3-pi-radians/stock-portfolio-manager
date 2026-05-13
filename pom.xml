@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.stockportfolio</groupId>
-    <artifactId>stock-portfolio-manager</artifactId>
+    <artifactId>app-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>stock-portfolio-manager</name>
-    <description>Stock Portfolio Manager - DevOps Final Project</description>
+    <name>app-service</name>
+    <description>Stock Portfolio Manager - App Service (portfolio, holdings, market)</description>
 
     <properties>
         <java.version>21</java.version>

@@ -1,38 +1,72 @@
 ---
-# Role: app_server
-# Pulls the latest Docker image and restarts the Spring Boot app container
-
 - name: Create Docker network if not exists
   shell: docker network create stockportfolio-network || true
   ignore_errors: yes
 
-- name: Force remove existing app container (if running)
-  shell: docker rm -f stockportfolio-app || true
+- name: Force remove existing containers
+  shell: |
+    docker rm -f auth-service || true
+    docker rm -f app-service || true
+    docker rm -f api-gateway || true
   ignore_errors: yes
 
-- name: Pull latest Docker image
-  shell: docker pull 3piradians/stock-portfolio-manager:{{ image_tag }}
+- name: Pull Docker images
+  shell: |
+    docker pull 3piradians/auth-service:{{ image_tag }}
+    docker pull 3piradians/app-service:{{ image_tag }}
+    docker pull 3piradians/api-gateway:{{ image_tag }}
 
-- name: Start Spring Boot app container
+- name: Start auth-service
   shell: |
     docker run -d \
-      --name stockportfolio-app \
+      --name auth-service \
       --restart on-failure \
       --network stockportfolio-network \
+      -e DB_HOST="mysql" \
+      -e DB_PORT="3306" \
+      -e DB_NAME="stockportfolio" \
+      -e DB_USERNAME="{{ db_username }}" \
+      -e DB_PASSWORD="{{ db_password }}" \
+      -e JWT_SECRET="{{ jwt_secret }}" \
+      -p 8081:8081 \
+      -v auth_logs:/app/logs \
+      3piradians/auth-service:{{ image_tag }}
+
+- name: Start app-service
+  shell: |
+    docker run -d \
+      --name app-service \
+      --restart on-failure \
+      --network stockportfolio-network \
+      -e DB_HOST="mysql" \
+      -e DB_PORT="3306" \
+      -e DB_NAME="stockportfolio" \
       -e DB_USERNAME="{{ db_username }}" \
       -e DB_PASSWORD="{{ db_password }}" \
       -e JWT_SECRET="{{ jwt_secret }}" \
       -e FINNHUB_API_KEY="{{ finnhub_api_key }}" \
-      -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql:3306/stockportfolio" \
-      -p 8081:8081 \
+      -p 8082:8082 \
       -v app_logs:/app/logs \
-      3piradians/stock-portfolio-manager:{{ image_tag }}
+      3piradians/app-service:{{ image_tag }}
 
-- name: Wait for app to be healthy
+- name: Start api-gateway
+  shell: |
+    docker run -d \
+      --name api-gateway \
+      --restart on-failure \
+      --network stockportfolio-network \
+      -e JWT_SECRET="{{ jwt_secret }}" \
+      -e AUTH_SERVICE_URL="http://auth-service:8081" \
+      -e APP_SERVICE_URL="http://app-service:8082" \
+      -p 8080:8080 \
+      -v gateway_logs:/app/logs \
+      3piradians/api-gateway:{{ image_tag }}
+
+- name: Wait for api-gateway to be healthy
   uri:
-    url: "http://localhost:8081/auth/login"
+    url: "http://localhost:8080/auth/login"
     status_code: 200
   register: result
   until: result.status == 200
-  retries: 10
+  retries: 15
   delay: 10

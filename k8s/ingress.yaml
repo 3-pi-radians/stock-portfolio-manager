@@ -15,9 +15,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: stockportfolio-service
+                name: api-gateway
                 port:
-                  number: 8081
+                  number: 8080
           - path: /kibana
             pathType: Prefix
             backend:

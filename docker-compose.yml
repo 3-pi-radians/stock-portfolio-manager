@@ -2,51 +2,91 @@ version: '3.8'
 
 services:
 
-  # ── MySQL ──────────────────────────────────────────────
   mysql:
     image: mysql:8.0
-    container_name: stockportfolio-mysql
+    container_name: mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: stockportfolio
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - stockportfolio-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # ── Spring Boot App ────────────────────────────────────
-  app:
-    image: chaitanya020403/stock-portfolio-manager:latest
-    container_name: stockportfolio-app
+  auth-service:
+    image: 3piradians/auth-service:latest
+    container_name: auth-service
     restart: on-failure
     depends_on:
       mysql:
         condition: service_healthy
-      elasticsearch:
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8081:8081"
+    volumes:
+      - auth_logs:/app/logs
+    networks:
+      - stockportfolio-network
+
+  app-service:
+    image: 3piradians/app-service:latest
+    container_name: app-service
+    restart: on-failure
+    depends_on:
+      mysql:
         condition: service_healthy
     environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       FINNHUB_API_KEY: ${FINNHUB_API_KEY}
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stockportfolio
     ports:
-      - "8081:8081"
+      - "8082:8082"
     volumes:
       - app_logs:/app/logs
+    networks:
+      - stockportfolio-network
 
-  # ── Elasticsearch ──────────────────────────────────────
+  api-gateway:
+    image: 3piradians/api-gateway:latest
+    container_name: api-gateway
+    restart: on-failure
+    depends_on:
+      - auth-service
+      - app-service
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      AUTH_SERVICE_URL: http://auth-service:8081
+      APP_SERVICE_URL: http://app-service:8082
+    ports:
+      - "8080:8080"
+    volumes:
+      - gateway_logs:/app/logs
+    networks:
+      - stockportfolio-network
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-    container_name: stockportfolio-elasticsearch
+    container_name: elasticsearch
     restart: unless-stopped
     environment:
       - discovery.type=single-node
@@ -56,31 +96,35 @@ services:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    networks:
+      - stockportfolio-network
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
       interval: 15s
       timeout: 10s
       retries: 10
 
-  # ── Logstash ───────────────────────────────────────────
   logstash:
     image: docker.elastic.co/logstash/logstash:8.13.0
-    container_name: stockportfolio-logstash
+    container_name: logstash
     restart: unless-stopped
     depends_on:
       elasticsearch:
         condition: service_healthy
     ports:
       - "5044:5044"
-      - "5000:5000/udp"
+      - "5000:5000"
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - app_logs:/app/logs:ro
+      - auth_logs:/app/logs/auth-service:ro
+      - app_logs:/app/logs/app-service:ro
+      - gateway_logs:/app/logs/api-gateway:ro
+    networks:
+      - stockportfolio-network
 
-  # ── Kibana ─────────────────────────────────────────────
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.0
-    container_name: stockportfolio-kibana
+    container_name: kibana
     restart: unless-stopped
     depends_on:
       elasticsearch:
@@ -89,8 +133,16 @@ services:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     ports:
       - "5601:5601"
+    networks:
+      - stockportfolio-network
+
+networks:
+  stockportfolio-network:
+    driver: bridge
 
 volumes:
   mysql_data:
   es_data:
+  auth_logs:
   app_logs:
+  gateway_logs:

@@ -1,8 +1,8 @@
-package com.stockportfolio.app.controller;
+package com.stockportfolio.auth.controller;
 
-import com.stockportfolio.app.dto.LoginRequest;
-import com.stockportfolio.app.dto.RegisterRequest;
-import com.stockportfolio.app.service.AuthService;
+import com.stockportfolio.auth.dto.LoginRequest;
+import com.stockportfolio.auth.dto.RegisterRequest;
+import com.stockportfolio.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,6 @@ public class AuthController {
                         Model model) {
         try {
             String token = authService.login(request);
-            // Use raw header to include SameSite=Lax (Jakarta Cookie API lacks setSameSite)
             response.addHeader("Set-Cookie",
                     "jwt=" + token + "; Path=/; HttpOnly; Max-Age=86400; SameSite=Lax");
             return "redirect:/portfolio";

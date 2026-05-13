@@ -1,10 +1,10 @@
-package com.stockportfolio.app;
+package com.stockportfolio.auth;
 
-import com.stockportfolio.app.dto.RegisterRequest;
-import com.stockportfolio.app.entity.User;
-import com.stockportfolio.app.repository.UserRepository;
-import com.stockportfolio.app.security.JwtUtil;
-import com.stockportfolio.app.service.AuthService;
+import com.stockportfolio.auth.dto.RegisterRequest;
+import com.stockportfolio.auth.entity.User;
+import com.stockportfolio.auth.repository.UserRepository;
+import com.stockportfolio.auth.security.JwtUtil;
+import com.stockportfolio.auth.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,12 +28,12 @@ class AuthServiceTest {
     @Test
     void testRegisterSuccess() {
         RegisterRequest req = new RegisterRequest();
-        req.setUsername("chaitanya");
-        req.setEmail("chaitanya@test.com");
+        req.setUsername("testuser");
+        req.setEmail("test@test.com");
         req.setPassword("password123");
 
-        when(userRepository.existsByUsername("chaitanya")).thenReturn(false);
-        when(userRepository.existsByEmail("chaitanya@test.com")).thenReturn(false);
+        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.existsByEmail("test@test.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("encoded");
 
         authService.register(req);
@@ -43,11 +43,11 @@ class AuthServiceTest {
     @Test
     void testRegisterDuplicateUsername() {
         RegisterRequest req = new RegisterRequest();
-        req.setUsername("chaitanya");
+        req.setUsername("testuser");
         req.setEmail("test@test.com");
         req.setPassword("password123");
 
-        when(userRepository.existsByUsername("chaitanya")).thenReturn(true);
+        when(userRepository.existsByUsername("testuser")).thenReturn(true);
 
         assertThrows(RuntimeException.class, () -> authService.register(req));
     }

@@ -4,7 +4,10 @@ metadata:
   name: stockportfolio-config
   namespace: default
 data:
-  DB_HOST: "mysql"
+  DB_HOST: "192.168.49.1"
   DB_PORT: "3306"
   DB_NAME: "stockportfolio"
-  SERVER_PORT: "8081"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://192.168.49.1:3306/stockportfolio"
+  AUTH_SERVICE_URL: "http://auth-service:8081"
+  APP_SERVICE_URL: "http://app-service:8082"
+  GATEWAY_URL: "http://api-gateway:8080"

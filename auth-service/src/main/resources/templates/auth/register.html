@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register — Stock Portfolio</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h1>📈 StockFolio</h1>
+        <p>Create your account</p>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post">
+            <label>Username</label>
+            <input type="text" th:field="*{username}" placeholder="Enter username"/>
+            <label>Email</label>
+            <input type="email" th:field="*{email}" placeholder="Enter email"/>
+            <label>Password</label>
+            <input type="password" th:field="*{password}" placeholder="Min 6 characters"/>
+            <button class="btn btn-primary" style="width:100%">Create Account</button>
+        </form>
+        <p style="text-align:center;margin-top:16px;font-size:0.9rem">
+            Already have an account? <a th:href="@{/auth/login}">Login</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

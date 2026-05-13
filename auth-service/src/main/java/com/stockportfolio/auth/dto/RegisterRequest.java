@@ -1,4 +1,4 @@
-package com.stockportfolio.app.dto;
+package com.stockportfolio.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,10 +1,10 @@
-package com.stockportfolio.app.service;
+package com.stockportfolio.auth.service;
 
-import com.stockportfolio.app.dto.LoginRequest;
-import com.stockportfolio.app.dto.RegisterRequest;
-import com.stockportfolio.app.entity.User;
-import com.stockportfolio.app.repository.UserRepository;
-import com.stockportfolio.app.security.JwtUtil;
+import com.stockportfolio.auth.dto.LoginRequest;
+import com.stockportfolio.auth.dto.RegisterRequest;
+import com.stockportfolio.auth.entity.User;
+import com.stockportfolio.auth.repository.UserRepository;
+import com.stockportfolio.auth.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

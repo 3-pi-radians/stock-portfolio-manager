@@ -8,6 +8,7 @@ RUN mvn clean package -DskipTests
 # Stage 2 - Run
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/stock-portfolio-manager-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 8081
+RUN mkdir -p /app/logs
+COPY --from=build /app/target/app-service-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "app.jar"]

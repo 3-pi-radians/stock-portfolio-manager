@@ -1,27 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stockportfolio-app
+  name: app-service
   namespace: default
   labels:
-    app: stockportfolio-app
+    app: app-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: stockportfolio-app
+      app: app-service
   template:
     metadata:
       labels:
-        app: stockportfolio-app
+        app: app-service
     spec:
       containers:
-        - name: stockportfolio-app
-          image: 3piradians/stock-portfolio-manager:latest
+        - name: app-service
+          image: 3piradians/app-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8081
+            - containerPort: 8082
           env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: stockportfolio-config
+                  key: SPRING_DATASOURCE_URL
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -37,11 +42,6 @@ spec:
                 configMapKeyRef:
                   name: stockportfolio-config
                   key: DB_NAME
-            - name: SERVER_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: stockportfolio-config
-                  key: SERVER_PORT
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -64,14 +64,14 @@ spec:
                   key: FINNHUB_API_KEY
           livenessProbe:
             httpGet:
-              path: /auth/login
-              port: 8081
+              path: /portfolio
+              port: 8082
             initialDelaySeconds: 60
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /auth/login
-              port: 8081
+              path: /portfolio
+              port: 8082
             initialDelaySeconds: 30
             periodSeconds: 10
           resources:
