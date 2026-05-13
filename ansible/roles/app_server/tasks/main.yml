@@ -3,27 +3,26 @@
 # Pulls the latest Docker image and restarts the Spring Boot app container
 
 - name: Force remove existing app container (if running)
-  shell: docker rm -f stock-portfolio-manager || true
+  shell: docker rm -f stockportfolio-app || true
   ignore_errors: yes
 
+- name: Pull latest Docker image
+  shell: docker pull 3piradians/stock-portfolio-manager:{{ image_tag }}
+
 - name: Start Spring Boot app container
-  community.docker.docker_container:
-    name: stockportfolio-app
-    image: "3piradians/stock-portfolio-manager:{{ image_tag }}"
-    state: started
-    restart_policy: on-failure
-    env:
-      DB_USERNAME: "{{ db_username }}"
-      DB_PASSWORD: "{{ db_password }}"
-      JWT_SECRET: "{{ jwt_secret }}"
-      FINNHUB_API_KEY: "{{ finnhub_api_key }}"
-      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/stockportfolio"
-    ports:
-      - "8081:8081"
-    links:
-      - "stockportfolio-mysql:mysql"
-    volumes:
-      - app_logs:/app/logs
+  shell: |
+    docker run -d \
+      --name stockportfolio-app \
+      --restart on-failure \
+      --network stockportfolio-network \
+      -e DB_USERNAME="{{ db_username }}" \
+      -e DB_PASSWORD="{{ db_password }}" \
+      -e JWT_SECRET="{{ jwt_secret }}" \
+      -e FINNHUB_API_KEY="{{ finnhub_api_key }}" \
+      -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql:3306/stockportfolio" \
+      -p 8081:8081 \
+      -v app_logs:/app/logs \
+      3piradians/stock-portfolio-manager:{{ image_tag }}
 
 - name: Wait for app to be healthy
   uri:
