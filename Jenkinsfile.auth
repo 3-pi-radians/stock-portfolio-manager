@@ -8,6 +8,7 @@ pipeline {
         DB_PASSWORD = credentials('DB_PASSWORD')
         JWT_SECRET = credentials('JWT_SECRET')
         KUBECONFIG = "/Users/pankajdeopa/.kube/config"
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {

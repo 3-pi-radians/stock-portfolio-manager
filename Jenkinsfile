@@ -6,6 +6,7 @@ pipeline {
         DOCKER_TAG = "${BUILD_NUMBER}"
         JWT_SECRET = credentials('JWT_SECRET')
         KUBECONFIG = "/Users/pankajdeopa/.kube/config"
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {
