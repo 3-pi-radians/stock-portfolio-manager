@@ -2,7 +2,8 @@ package com.stockportfolio.gateway.filter;
 
 import com.stockportfolio.gateway.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -16,9 +17,9 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthFilter.class);
     private final JwtUtil jwtUtil;
 
     private static final List<String> PUBLIC_PATHS = List.of("/auth/", "/css/", "/actuator/");
