@@ -2,27 +2,31 @@
 # Role: mysql
 # Ensures MySQL is running and the stockportfolio database/user exist
 
-- name: Pull MySQL image
-  community.docker.docker_image:
-    name: mysql
-    tag: "8.0"
-    source: pull
+- name: Create Docker network if not exists
+  shell: docker network create stockportfolio-network || true
+  ignore_errors: yes
 
-- name: Start MySQL container
-  community.docker.docker_container:
-    name: stockportfolio-mysql
-    image: mysql:8.0
-    state: started
-    restart_policy: unless-stopped
-    env:
-      MYSQL_ROOT_PASSWORD: "rootpassword"
-      MYSQL_DATABASE: "stockportfolio"
-      MYSQL_USER: "{{ db_username }}"
-      MYSQL_PASSWORD: "{{ db_password }}"
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+- name: Pull MySQL image
+  shell: docker pull mysql:8.0
+
+- name: Force remove existing MySQL container (if running)
+  shell: docker rm -f stockportfolio-mysql || true
+  ignore_errors: yes
+
+- name: Start MySQL container on stockportfolio-network
+  shell: |
+    docker run -d \
+      --name stockportfolio-mysql \
+      --network stockportfolio-network \
+      --network-alias mysql \
+      --restart unless-stopped \
+      -e MYSQL_ROOT_PASSWORD="rootpassword" \
+      -e MYSQL_DATABASE="stockportfolio" \
+      -e MYSQL_USER="{{ db_username }}" \
+      -e MYSQL_PASSWORD="{{ db_password }}" \
+      -p 3306:3306 \
+      -v mysql_data:/var/lib/mysql \
+      mysql:8.0
 
 - name: Wait for MySQL to be healthy
   wait_for:
