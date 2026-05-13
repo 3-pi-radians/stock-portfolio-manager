@@ -12,8 +12,8 @@
 
 - name: Pull Docker images
   shell: |
-    docker pull 3piradians/auth-service:{{ image_tag }}
-    docker pull 3piradians/app-service:{{ image_tag }}
+    docker pull 3piradians/auth-service:latest
+    docker pull 3piradians/app-service:latest
     docker pull 3piradians/api-gateway:{{ image_tag }}
 
 - name: Start auth-service
@@ -30,7 +30,7 @@
       -e JWT_SECRET="{{ jwt_secret }}" \
       -p 8081:8081 \
       -v auth_logs:/app/logs \
-      3piradians/auth-service:{{ image_tag }}
+      3piradians/auth-service:latest
 
 - name: Start app-service
   shell: |
@@ -47,7 +47,7 @@
       -e FINNHUB_API_KEY="{{ finnhub_api_key }}" \
       -p 8082:8082 \
       -v app_logs:/app/logs \
-      3piradians/app-service:{{ image_tag }}
+      3piradians/app-service:latest
 
 - name: Start api-gateway
   shell: |

@@ -6,7 +6,6 @@ import com.stockportfolio.app.service.HoldingService;
 import com.stockportfolio.app.service.MarketService;
 import com.stockportfolio.app.service.PortfolioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,19 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/portfolio/{portfolioId}/holdings")
-@RequiredArgsConstructor
 public class HoldingController {
 
     private final HoldingService holdingService;
     private final PortfolioService portfolioService;
     private final MarketService marketService;
+
+    public HoldingController(HoldingService holdingService,
+                             PortfolioService portfolioService,
+                             MarketService marketService) {
+        this.holdingService = holdingService;
+        this.portfolioService = portfolioService;
+        this.marketService = marketService;
+    }
 
     @GetMapping
     public String listHoldings(@PathVariable Long portfolioId, Model model) {

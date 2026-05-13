@@ -3,17 +3,19 @@ package com.stockportfolio.app.controller;
 import com.stockportfolio.app.dto.PortfolioRequest;
 import com.stockportfolio.app.service.PortfolioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/portfolio")
-@RequiredArgsConstructor
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
+
+    public PortfolioController(PortfolioService portfolioService) {
+        this.portfolioService = portfolioService;
+    }
 
     @GetMapping
     public String listPortfolios(Model model) {

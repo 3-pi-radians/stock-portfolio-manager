@@ -4,7 +4,10 @@ pipeline {
     environment {
         DOCKER_IMAGE = '3piradians/api-gateway'
         DOCKER_TAG = "${BUILD_NUMBER}"
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
         JWT_SECRET = credentials('JWT_SECRET')
+        FINNHUB_API_KEY = credentials('FINNHUB_API_KEY')
         KUBECONFIG = "/Users/pankajdeopa/.kube/config"
         PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
@@ -75,7 +78,10 @@ pipeline {
                     ansible-playbook -i ansible/inventory/hosts.ini \
                     ansible/playbooks/deploy.yml \
                     --extra-vars "image_tag=${DOCKER_TAG} \
-                                 deploy_service=api-gateway"
+                                 db_username=${DB_USERNAME} \
+                                 db_password=${DB_PASSWORD} \
+                                 jwt_secret=${JWT_SECRET} \
+                                 finnhub_api_key=${FINNHUB_API_KEY}"
                 """
             }
         }

@@ -67,19 +67,10 @@ pipeline {
             }
         }
 
-        stage('Deploy with Ansible') {
+        stage('Deploy') {
             steps {
-                echo '========== Stage 6: Deploying via Ansible =========='
-                sh """
-                    ansible-playbook -i ansible/inventory/hosts.ini \
-                    ansible/playbooks/deploy.yml \
-                    --extra-vars "image_tag=${DOCKER_TAG} \
-                                 db_username=${DB_USERNAME} \
-                                 db_password=${DB_PASSWORD} \
-                                 jwt_secret=${JWT_SECRET} \
-                                 finnhub_api_key=${FINNHUB_API_KEY} \
-                                 deploy_service=app-service"
-                """
+                echo 'app-service image pushed to Docker Hub successfully'
+                echo 'Full stack deployment handled by api-gateway pipeline'
             }
         }
 

@@ -2,6 +2,14 @@
 # Role: mysql
 # Ensures MySQL is running and the stockportfolio database/user exist
 
+- name: Force remove all service containers before redeploy
+  shell: |
+    docker rm -f auth-service || true
+    docker rm -f app-service || true
+    docker rm -f api-gateway || true
+    docker rm -f stockportfolio-mysql || true
+  ignore_errors: yes
+
 - name: Create Docker network if not exists
   shell: docker network create stockportfolio-network || true
   ignore_errors: yes
