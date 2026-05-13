@@ -58,9 +58,13 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                    sh "docker push ${DOCKER_IMAGE}:latest"
+                    sh """
+                        mkdir -p /tmp/docker-config-${BUILD_NUMBER}
+                        echo '{"auths":{"https://index.docker.io/v1/":{"auth":"'"$(echo -n '${DOCKER_USER}:${DOCKER_PASS}' | base64)"'"}}}' > /tmp/docker-config-${BUILD_NUMBER}/config.json
+                        docker --config /tmp/docker-config-${BUILD_NUMBER} push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker --config /tmp/docker-config-${BUILD_NUMBER} push ${DOCKER_IMAGE}:latest
+                        rm -rf /tmp/docker-config-${BUILD_NUMBER}
+                    """
                 }
             }
         }
@@ -87,7 +91,7 @@ pipeline {
             echo 'Pipeline FAILED!'
         }
         always {
-            sh 'docker logout'
+            sh 'docker logout || true'
         }
     }
 }
