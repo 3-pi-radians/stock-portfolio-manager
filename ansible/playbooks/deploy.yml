@@ -10,7 +10,7 @@
 
   vars:
     image_tag: "latest"       # overridden by Jenkins --extra-vars "image_tag=${BUILD_NUMBER}"
-    docker_image: "chaitanya020403/stock-portfolio-manager:{{ image_tag }}"
+    docker_image: "3piradians/stock-portfolio-manager:{{ image_tag }}"
 
   roles:
     - role: ../roles/mysql
