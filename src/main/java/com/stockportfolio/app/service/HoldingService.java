@@ -3,19 +3,27 @@ package com.stockportfolio.app.service;
 import com.stockportfolio.app.dto.HoldingRequest;
 import com.stockportfolio.app.entity.*;
 import com.stockportfolio.app.repository.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class HoldingService {
+
+    private static final Logger log = LoggerFactory.getLogger(HoldingService.class);
 
     private final HoldingRepository holdingRepository;
     private final TransactionRepository transactionRepository;
     private final PortfolioService portfolioService;
+
+    public HoldingService(HoldingRepository holdingRepository,
+                          TransactionRepository transactionRepository,
+                          PortfolioService portfolioService) {
+        this.holdingRepository = holdingRepository;
+        this.transactionRepository = transactionRepository;
+        this.portfolioService = portfolioService;
+    }
 
     public List<Holding> getHoldings(Long portfolioId) {
         portfolioService.getPortfolioById(portfolioId);

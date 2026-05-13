@@ -1,17 +1,11 @@
 package com.stockportfolio.app.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "portfolios")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Portfolio {
 
     @Id
@@ -30,4 +24,29 @@ public class Portfolio {
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Holding> holdings;
+
+    public Portfolio() {}
+
+    public Portfolio(Long id, String name, LocalDateTime createdAt, User user, List<Holding> holdings) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.user = user;
+        this.holdings = holdings;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public List<Holding> getHoldings() { return holdings; }
+    public void setHoldings(List<Holding> holdings) { this.holdings = holdings; }
 }

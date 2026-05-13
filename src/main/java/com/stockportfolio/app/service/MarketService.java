@@ -1,18 +1,17 @@
 package com.stockportfolio.app.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class MarketService {
+
+    private static final Logger log = LoggerFactory.getLogger(MarketService.class);
 
     @Value("${finnhub.api.key}")
     private String apiKey;
@@ -21,6 +20,10 @@ public class MarketService {
     private String baseUrl;
 
     private final RestTemplate restTemplate;
+
+    public MarketService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getStockQuote(String symbol) {

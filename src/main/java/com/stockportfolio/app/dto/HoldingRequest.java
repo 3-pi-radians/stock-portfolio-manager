@@ -2,10 +2,8 @@ package com.stockportfolio.app.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
 import java.math.BigDecimal;
 
-@Data
 public class HoldingRequest {
     @NotBlank
     private String stockSymbol;
@@ -17,4 +15,16 @@ public class HoldingRequest {
 
     @Positive
     private BigDecimal buyPrice;
+
+    public String getStockSymbol() { return stockSymbol; }
+    public void setStockSymbol(String stockSymbol) { this.stockSymbol = stockSymbol; }
+
+    public String getStockName() { return stockName; }
+    public void setStockName(String stockName) { this.stockName = stockName; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public BigDecimal getBuyPrice() { return buyPrice; }
+    public void setBuyPrice(BigDecimal buyPrice) { this.buyPrice = buyPrice; }
 }

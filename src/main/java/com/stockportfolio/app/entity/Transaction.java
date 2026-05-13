@@ -1,17 +1,11 @@
 package com.stockportfolio.app.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Transaction {
 
     @Id
@@ -41,4 +35,38 @@ public class Transaction {
     public enum ActionType {
         BUY, SELL
     }
+
+    public Transaction() {}
+
+    public Transaction(Long id, String stockSymbol, ActionType action, Integer quantity,
+                       BigDecimal price, LocalDateTime executedAt, Portfolio portfolio) {
+        this.id = id;
+        this.stockSymbol = stockSymbol;
+        this.action = action;
+        this.quantity = quantity;
+        this.price = price;
+        this.executedAt = executedAt;
+        this.portfolio = portfolio;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getStockSymbol() { return stockSymbol; }
+    public void setStockSymbol(String stockSymbol) { this.stockSymbol = stockSymbol; }
+
+    public ActionType getAction() { return action; }
+    public void setAction(ActionType action) { this.action = action; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public LocalDateTime getExecutedAt() { return executedAt; }
+    public void setExecutedAt(LocalDateTime executedAt) { this.executedAt = executedAt; }
+
+    public Portfolio getPortfolio() { return portfolio; }
+    public void setPortfolio(Portfolio portfolio) { this.portfolio = portfolio; }
 }
