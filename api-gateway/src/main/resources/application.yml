@@ -11,6 +11,14 @@ spring:
           uri: ${AUTH_SERVICE_URL:http://auth-service:8081}
           predicates:
             - Path=/auth/**
+          filters:
+            # Preserve the original client Host header so Spring MVC in auth-service
+            # builds redirect URLs using the gateway host (e.g. localhost:8202)
+            # instead of the internal Docker hostname (auth-service:8081).
+            - PreserveHostHeader
+            # Safety net: rewrite any leaked internal hostname in Location headers
+            # to a root-relative path so browsers always redirect through the gateway.
+            - RewriteResponseHeader=Location, ^https?://[^/]+(/.*)$, $\1
         - id: static-resources
           uri: ${APP_SERVICE_URL:http://app-service:8082}
           predicates:
