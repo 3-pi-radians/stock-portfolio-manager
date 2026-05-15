@@ -23,10 +23,21 @@ spring:
           uri: ${APP_SERVICE_URL:http://app-service:8082}
           predicates:
             - Path=/css/**
+          filters:
+            - PreserveHostHeader
+            - RewriteResponseHeader=Location, ^https?://[^/]+(/.*)$, $\1
         - id: app-service
           uri: ${APP_SERVICE_URL:http://app-service:8082}
           predicates:
             - Path=/**
+          filters:
+            # Preserve the original client Host header so Spring MVC in app-service
+            # builds redirect URLs using the gateway host (e.g. localhost:8202)
+            # instead of the internal Docker hostname (app-service:8082).
+            - PreserveHostHeader
+            # Safety net: rewrite any leaked internal hostname in Location headers
+            # to a root-relative path so browsers always redirect through the gateway.
+            - RewriteResponseHeader=Location, ^https?://[^/]+(/.*)$, $\1
 
 jwt:
   secret: ${JWT_SECRET}
