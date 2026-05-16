@@ -69,15 +69,25 @@ public class HoldingController {
 
     @PostMapping("/add")
     public String addHolding(@PathVariable Long portfolioId,
-                             @Valid @ModelAttribute HoldingRequest request) {
-        holdingService.addHolding(portfolioId, request);
+                             @Valid @ModelAttribute HoldingRequest request,
+                             Model model) {
+        try {
+            holdingService.addHolding(portfolioId, request);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
         return "redirect:/portfolio/" + portfolioId + "/holdings";
     }
 
     @PostMapping("/remove/{holdingId}")
     public String removeHolding(@PathVariable Long portfolioId,
-                                @PathVariable Long holdingId) {
-        holdingService.removeHolding(portfolioId, holdingId);
+                                @PathVariable Long holdingId,
+                                Model model) {
+        try {
+            holdingService.removeHolding(portfolioId, holdingId);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
         return "redirect:/portfolio/" + portfolioId + "/holdings";
     }
 }

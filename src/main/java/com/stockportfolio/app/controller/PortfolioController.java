@@ -38,8 +38,12 @@ public class PortfolioController {
     }
 
     @PostMapping("/delete/{id}")
-    public String deletePortfolio(@PathVariable Long id) {
-        portfolioService.deletePortfolio(id);
+    public String deletePortfolio(@PathVariable Long id, Model model) {
+        try {
+            portfolioService.deletePortfolio(id);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
         return "redirect:/portfolio";
     }
 }
