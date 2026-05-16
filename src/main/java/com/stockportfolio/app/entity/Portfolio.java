@@ -22,17 +22,22 @@ public class Portfolio {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Holding> holdings;
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Transaction> transactions;
 
     public Portfolio() {}
 
-    public Portfolio(Long id, String name, LocalDateTime createdAt, User user, List<Holding> holdings) {
+    public Portfolio(Long id, String name, LocalDateTime createdAt, User user,
+                     List<Holding> holdings, List<Transaction> transactions) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.user = user;
         this.holdings = holdings;
+        this.transactions = transactions;
     }
 
     public Long getId() { return id; }
@@ -49,4 +54,7 @@ public class Portfolio {
 
     public List<Holding> getHoldings() { return holdings; }
     public void setHoldings(List<Holding> holdings) { this.holdings = holdings; }
+
+    public List<Transaction> getTransactions() { return transactions; }
+    public void setTransactions(List<Transaction> transactions) { this.transactions = transactions; }
 }
