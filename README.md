@@ -1,14 +1,14 @@
-# 📈 Stock Portfolio Manager
+# Stock Portfolio Manager
 
 A full-stack Stock Portfolio Manager built with Java Spring Boot, integrated with Finnhub API for live stock prices, deployed using a complete DevOps pipeline.
 
-## 👥 Team
+## Team
 | Member | Role |
 |---|---|
 | **Chaitanya Nemade** | Backend APIs, JWT Security, Finnhub Integration, Thymeleaf UI, Jenkins CI/CD, Kubernetes |
 | **Pankaj** | Docker, Docker Compose, Ansible Playbooks, Vault, ELK Stack, Kibana Dashboards |
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Application
 | Layer | Technology |
@@ -30,7 +30,7 @@ A full-stack Stock Portfolio Manager built with Java Spring Boot, integrated wit
 | Orchestration | Kubernetes + HPA |
 | Monitoring & Logging | ELK Stack (Elasticsearch, Logstash, Kibana) |
 
-## ✨ Features
+## Features
 - User registration and login with JWT authentication
 - Create and manage multiple stock portfolios
 - Buy and sell stocks with live price tracking via Finnhub API
@@ -40,7 +40,7 @@ A full-stack Stock Portfolio Manager built with Java Spring Boot, integrated wit
 - Auto-refreshing stock prices every 60 seconds
 - Role-based access control (User and Admin roles)
 
-## 🚀 DevOps Pipeline Flow
+## DevOps Pipeline Flow
 Code Push to GitHub
 ↓
 Jenkins detects via GitHub Webhook
@@ -59,7 +59,7 @@ Kubernetes runs app with HPA auto-scaling
 ↓
 App logs → Logstash → Elasticsearch → Kibana
 
-## ⚙️ Local Setup Instructions
+## Local Setup Instructions
 
 ### Prerequisites
 - Java 21
@@ -106,7 +106,7 @@ UPDATE users SET role = 'ADMIN' WHERE username = 'your_username';
 ```
 Then visit `http://localhost:8081/admin`
 
-## 📁 Project Structure
+## Project Structure
 stock-portfolio-manager/
 ├── src/
 │   ├── main/
@@ -128,7 +128,7 @@ stock-portfolio-manager/
 ├── .gitignore
 └── pom.xml
 
-## 🌿 Branch Strategy
+## Branch Strategy
 | Branch | Owner | Purpose |
 |---|---|---|
 | `main` | Both | Production-ready merged code |
@@ -141,14 +141,14 @@ stock-portfolio-manager/
 | `feature/ansible` | Pankaj | Ansible playbooks + Vault |
 | `feature/elk` | Pankaj | ELK Stack + Kibana dashboards |
 
-## 🔒 Security Notes
+## Security Notes
 - Passwords encrypted with BCrypt
 - JWT tokens stored in HTTP-only cookies
 - Sensitive credentials stored in `.env` file (never committed to Git)
 - Vault used for secrets management in production (Kubernetes)
 - `.env` is listed in `.gitignore` — safe from accidental exposure
 
-## 📊 API Endpoints
+## API Endpoints
 | Method | Endpoint | Description | Access |
 |---|---|---|---|
 | POST | `/auth/register` | Register new user | Public |
@@ -160,9 +160,4 @@ stock-portfolio-manager/
 | POST | `/portfolio/{id}/holdings/remove/{hid}` | Sell a stock | User |
 | GET | `/market/search?symbol=AAPL` | Live stock price | User |
 | GET | `/admin` | Admin dashboard | Admin only |
-
-## 🎓 Course Information
-- **Course:** CSE 816 - Software Production Engineering
-- **Project:** Final Major Project - DevOps Framework Implementation
-- **Institution:** IIIT Banglore
 
